@@ -1,7 +1,10 @@
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_DEPRECATE
 #include <stdio.h>
 #include <conio.h>
 #include "console.h"
 #include <time.h>
+#include <stdlib.h>
 enum trangthai {down,up,left,right};
 struct toado
 {
@@ -9,7 +12,7 @@ struct toado
 };
 struct snake
 {
-	toado td[30];
+	toado td[100];
 	int n;
 	trangthai tt;
 };
@@ -22,37 +25,44 @@ void khoitao(snake &a,moi &b)
 	b.td.x = 10;
 	b.td.y = 10;
 	a.n = 1;
-	a.td[0].x = 5;
-	a.td[0].y = 3;
+	a.td[0].x = 10;
+	a.td[0].y = 5;
 	a.tt = right;
 }
 void hienthi(snake a,moi b)
 {
+	clrscr();
+	TextColor(12);
 	for (int i = 0; i < 30; i++)
 	{
-		gotoXY(60, i);
+		gotoXY(70, i);
 		printf("%c", 179);
 	}
-	for (int i = 2; i <= 28; i++)
+	TextColor(14);
+	for (int i = 1; i <= 28; i++)
 	{
 		gotoXY(5, i);
 		printf("%c", 179);
-		gotoXY(55, i);
+		gotoXY(65, i);
 		printf("%c", 179);
 	}
-	for (int i = 4; i <= 56; i++)
+	for (int i = 5; i <= 65; i++)
 	{
-		gotoXY(i, 2);
+		gotoXY(i, 1);
 		printf("%c", 196);
 		gotoXY(i, 28);
 		printf("%c", 196);
 	}
+	TextColor(8+rand()%8);
 	gotoXY(b.td.x, b.td.y);
-	printf("$");
-	for (int i = 0; i < a.n; i++)
+	putchar(235);
+	TextColor(10);
+	gotoXY(a.td[0].x, a.td[0].y);
+	putchar('0');
+	for (int i = 1; i < a.n; i++)
 	{
 		gotoXY(a.td[i].x, a.td[i].y);
-		printf("*");
+		putchar('o');
 	}
 }
 void run(snake &a)
@@ -101,6 +111,17 @@ void run(snake &a)
 }
 int anmoi(snake &a, moi &b)
 {
+	if (a.td[0].x < 5 || a.td[0].x > 65 || a.td[0].y < 2 || a.td[0].y > 29)
+	{
+		return -1;
+	}
+	for (int i = 1; i < a.n; i++)
+	{
+		if (a.td[0].x == a.td[i].x && a.td[0].y == a.td[i].y)
+		{
+			return -1;
+		}
+	}
 	if (a.td[0].x == b.td.x && a.td[0].y == b.td.y)
 	{
 		for (int i = a.n; i > 0; i--)
@@ -111,33 +132,22 @@ int anmoi(snake &a, moi &b)
 		a.n++;
 		if (a.tt == up)
 		{
-			a.td[0].x = a.td[0].y--;
+               a.td[0].y--;
 		}
-		if (a.tt == down)
+		else if (a.tt == down)
 		{
-			a.td[0].x = a.td[0].y++;
+			 a.td[0].y++;
 		}
-		if (a.tt == left)
+		else if (a.tt == left)
 		{
-			a.td[0].x = a.td[0].x--;
+			a.td[0].x--;
 		}
-		if (a.tt == right)
+		else if (a.tt == right)
 		{
-			a.td[0].x = a.td[0].x++;
+			a.td[0].x++;
 		}
-		b.td.x =5+ rand() % 55;
-		b.td.y =2 +rand() % 26;
-	}
-	if (a.td[0].x <= 4 || a.td[0].x >= 56 || a.td[0].y <= 2 || a.td[0].y >= 26)
-	{
-		return -1;
-	}
-	for (int i = 0; i < a.n; i++)
-	{
-		if (b.td.x == a.td[i].x && b.td.y == a.td[i].y)
-		{
-			return -1;
-		}
+		b.td.x =6+ rand() % 50;
+		b.td.y =3+  rand() % 25;
 	}
 	return 0;
 }
@@ -149,7 +159,6 @@ int main()
 	khoitao(a,b);
 	while (1)
 	{
-		clrscr();
 		hienthi(a,b);
 		run(a);
 		int kt=anmoi(a, b);
@@ -157,10 +166,12 @@ int main()
 		{
 			gotoXY(85, 12);
 			printf("GAM OVER!!!");
-			_getch();
+			while(_getch()!=13)
+			{
+			}
 			break;
 		}
-		Sleep(200);
+		Sleep(150);
 	}
 	return 0;
 }
